@@ -531,6 +531,7 @@ func (c *MPIJobController) syncHandler(key string) error {
 			}
 		}
 
+		// 仅仅是维护了一下StatefulSet的worker数目
 		worker, err = c.getOrCreateWorkerStatefulSet(mpiJob, workerReplicas)
 		if err != nil {
 			return err

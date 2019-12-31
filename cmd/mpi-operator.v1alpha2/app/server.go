@@ -135,6 +135,8 @@ func Run(opt *options.ServerOption) error {
 		if opt.EnableGangScheduling {
 			podgroupsInformer = kubebatchInformerFactory.Scheduling().V1alpha1().PodGroups()
 		}
+
+		// controller utilizes informer to obtain the status change of resources from APIServer
 		controller := controllersv1alpha2.NewMPIJobController(
 			kubeClient,
 			mpiJobClientSet,
@@ -227,11 +229,13 @@ func createClientSets(config *restclientset.Config) (kubeclientset.Interface, ku
 		return nil, nil, nil, nil, err
 	}
 
+	// 自定义mpi clientset，用于对mpi job进行CRUD
 	mpiJobClientSet, err := mpijobclientset.NewForConfig(config)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
 
+	// kubebatch clientset，用于gang scheduling
 	kubeBatchClientSet, err := kubebatchclient.NewForConfig(restclientset.AddUserAgent(config, "kube-batch"))
 	if err != nil {
 		return nil, nil, nil, nil, err
